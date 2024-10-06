@@ -1,0 +1,9 @@
+# Ignore clasp configuration
+.clasp.json
+
+# Ignore node_modules if you end up using npm
+node_modules/
+
+# Ignore any system-specific files
+.DS_Store
+Thumbs.db
