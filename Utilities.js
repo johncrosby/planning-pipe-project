@@ -1,5 +1,10 @@
 // Utilities.js
 
+function testUtilities() {
+  SpreadsheetApp.getActiveSpreadsheet().toast('Utilities.js is loaded!');
+}
+
+
 // Helper: Format columns based on the mode (e.g., Title Case or Lower Case)
 function formatColumns(sheet, columnNames, mode) {
     columnNames.forEach(function(columnName) {
@@ -86,17 +91,17 @@ function formatColumns(sheet, columnNames, mode) {
     }
   }
   
-  // Helper: Get the column index by header name
+
   function getColumnIndexByHeader(sheet, headerName) {
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    
     for (var col = 0; col < headers.length; col++) {
       if (headers[col].toLowerCase() === headerName.toLowerCase()) {
         return col + 1;
       }
     }
-    return -1;
+    return -1; // Return -1 if header not found
   }
+
   
   // Helper: Process contact names in "App Contact" or "Agt Contact" columns
   function processNamesInContactColumn(sheet, contactColumnName) {

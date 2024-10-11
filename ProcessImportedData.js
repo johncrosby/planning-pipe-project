@@ -19,6 +19,7 @@ function processImportedData() {
     formatColumns(sheet, ["Heading"], "lower");
     concatenateAppRawAddr(sheet);
     movePersonalNamesToAppContact(sheet);
+    cleanUpHeadingColumn(sheet); // New function to tidy up the Heading column
     SpreadsheetApp.getActiveSpreadsheet().toast('Data cleanup completed.', 'Done', 3);
   }
   
@@ -37,3 +38,23 @@ function processImportedData() {
     SpreadsheetApp.getActiveSpreadsheet().toast('Columns added and contact names processed successfully.', 'Done', 3);
   }
   
+  // Function to clean up the "Heading" column by removing everything before the number
+function cleanUpHeadingColumn(sheet) {
+  var headingColIndex = getColumnIndexByHeader(sheet, "Heading");
+  if (headingColIndex === -1) {
+      SpreadsheetApp.getActiveSpreadsheet().toast('Heading column not found.', 'Error', 3);
+      return;
+  }
+
+  var lastRow = sheet.getLastRow();
+  for (var row = 2; row <= lastRow; row++) { // Assuming headers are in the first row
+      var headingValue = sheet.getRange(row, headingColIndex).getValue();
+      if (headingValue) {
+          // Match any number and everything that comes after it
+          var cleanedValue = headingValue.replace(/^.*?(\d+)/, '$1');
+          sheet.getRange(row, headingColIndex).setValue(cleanedValue);
+      }
+  }
+
+  SpreadsheetApp.getActiveSpreadsheet().toast('Heading column cleaned up.', 'Done', 3);
+}

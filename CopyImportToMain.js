@@ -1,4 +1,11 @@
 function copyImportToMain() {
+  testUtilities()
+  if (typeof getColumnIndexByHeader === "function") {
+    Logger.log("Column Index Function is available");
+  } else {
+    Logger.log("Column Index Function is not available");
+  }
+  
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var importSheet = ss.getSheetByName('Import');
     var mainSheet = ss.getSheetByName('Main');
@@ -133,16 +140,17 @@ function initializeExistingColumns(sheet, startRow, numRows) {
     }
   }
   
-  // Helper function to get the column index by header name
-  function getColumnIndexByHeader(sheet, headerName) {
-    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-    for (var col = 0; col < headers.length; col++) {
-      if (headers[col].toLowerCase() === headerName.toLowerCase()) {
-        return col + 1;
-      }
-    }
-    return -1; // Return -1 if header not found
-  }
+//   // Helper function to get the column index by header name
+  // function getColumnIndexByHeader(sheet, headerName) {
+  //   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  //   for (var col = 0; col < headers.length; col++) {
+  //     if (headers[col].toLowerCase() === headerName.toLowerCase()) {
+  //       return col + 1;
+  //     }
+  //   }
+  //   return -1; // Return -1 if header not found
+  // }
+
   
   function createDropdownWithFormatting(sheet, letterColIndex, startRow, numRows) {
     const letterRange = sheet.getRange(startRow, letterColIndex, numRows, 1);
