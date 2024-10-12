@@ -166,6 +166,33 @@ function formatColumns(sheet, columnNames, mode) {
 // Existing utility functions...
 
 // Helper: Move "Site Raw Addr" to the first column
+// function moveSiteRawAddrToFirstColumn(sheet) {
+//   var siteRawAddrIndex = getColumnIndexByHeader(sheet, "Site Raw Addr");
+
+//   if (siteRawAddrIndex === -1) {
+//     SpreadsheetApp.getActiveSpreadsheet().toast('Site Raw Addr column not found.', 'Error', 3);
+//     return;
+//   }
+
+//   // Cut the "Site Raw Addr" column
+//   var lastRow = sheet.getLastRow();
+//   var siteRawAddrRange = sheet.getRange(1, siteRawAddrIndex, lastRow, 1);  // Include the header
+//   var siteRawAddrValues = siteRawAddrRange.getValues();
+  
+//   // Delete the original column
+//   sheet.deleteColumn(siteRawAddrIndex);
+
+//   // Insert a new column at the first position
+//   sheet.insertColumnBefore(1);
+
+//   // Set the values of "Site Raw Addr" in the first column
+//   sheet.getRange(1, 1, lastRow, 1).setValues(siteRawAddrValues);
+
+//   // Notify that the move is complete
+//   SpreadsheetApp.getActiveSpreadsheet().toast('Site Raw Addr moved to first column.', 'Done', 3);
+// }
+
+// Helper: Move "Site Raw Addr" to the first column
 function moveSiteRawAddrToFirstColumn(sheet) {
   var siteRawAddrIndex = getColumnIndexByHeader(sheet, "Site Raw Addr");
 
@@ -192,4 +219,28 @@ function moveSiteRawAddrToFirstColumn(sheet) {
   SpreadsheetApp.getActiveSpreadsheet().toast('Site Raw Addr moved to first column.', 'Done', 3);
 }
 
-  
+// Helper: Move "Heading" to the second column
+function moveHeadingToSecondColumn(sheet) {
+  var headingColIndex = getColumnIndexByHeader(sheet, "Heading");
+
+  if (headingColIndex === -1) {
+    SpreadsheetApp.getActiveSpreadsheet().toast('Heading column not found.', 'Error', 3);
+    return;
+  }
+
+  var lastRow = sheet.getLastRow();
+  var headingRange = sheet.getRange(1, headingColIndex, lastRow, 1);  // Include the header
+  var headingValues = headingRange.getValues();
+
+  // Delete the original "Heading" column
+  sheet.deleteColumn(headingColIndex);
+
+  // Insert a new column at the second position
+  sheet.insertColumnBefore(2);
+
+  // Set the values of "Heading" in the second column
+  sheet.getRange(1, 2, lastRow, 1).setValues(headingValues);
+
+  // Notify that the move is complete
+  SpreadsheetApp.getActiveSpreadsheet().toast('Heading moved to second column.', 'Done', 3);
+}

@@ -1,48 +1,103 @@
-function copyImportToMain() {
-  testUtilities()
-  if (typeof getColumnIndexByHeader === "function") {
-    Logger.log("Column Index Function is available");
-  } else {
-    Logger.log("Column Index Function is not available");
-  }
+// CopyImportToMain.js
+// function copyImportToMain() {
+//   testUtilities()
+//   if (typeof getColumnIndexByHeader === "function") {
+//     Logger.log("Column Index Function is available");
+//   } else {
+//     Logger.log("Column Index Function is not available");
+//   }
   
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var importSheet = ss.getSheetByName('Import');
-    var mainSheet = ss.getSheetByName('Main');
+//     var ss = SpreadsheetApp.getActiveSpreadsheet();
+//     var importSheet = ss.getSheetByName('Import');
+//     var mainSheet = ss.getSheetByName('Main');
     
-    if (!importSheet || !mainSheet) {
+//     if (!importSheet || !mainSheet) {
+//       SpreadsheetApp.getActiveSpreadsheet().toast('Import or Main sheet not found.', 'Error', 3);
+//       return;
+//     }
+  
+//     // Get the data from the Import sheet
+//     var importData = importSheet.getDataRange().getValues();
+    
+//     // Check if Main sheet has no data (first run)
+//     var lastRowInMain = mainSheet.getLastRow();
+//     var isFirstRun = lastRowInMain === 0 || (lastRowInMain === 1 && mainSheet.getRange(1, 1).isBlank());
+    
+//     if (isFirstRun) {
+//       // First run: Copy headers and data, add new columns, and initialize values
+//       copyHeadersAndData(importSheet, mainSheet, importData);
+//       insertAndInitializeNewColumns(mainSheet, importData.length);
+//     } else {
+//       // Subsequent runs: Copy only data based on headers, initialize new columns for new rows
+//       var lastRowInImport = importData.length;
+//       var newDataStartRow = lastRowInMain + 1;
+  
+//       // Dynamically map and copy data to corresponding columns, excluding Smart Rating and Letter
+//       copyDataByHeaders(importSheet, mainSheet, newDataStartRow, importData.slice(1), ["Smart Rating", "Letter"]);
+  
+//       // Initialize new columns for new rows
+//       initializeExistingColumns(mainSheet, newDataStartRow, lastRowInImport - 1);
+//     }
+    
+//     // Freeze the top row with headers
+//     mainSheet.setFrozenRows(1);
+    
+//     SpreadsheetApp.getActiveSpreadsheet().toast('Data from Import copied to Main sheet.', 'Done', 3);
+//   }
+function copyImportToMain() {
+  testUtilities();
+  if (typeof getColumnIndexByHeader === "function") {
+      Logger.log("Column Index Function is available");
+  } else {
+      Logger.log("Column Index Function is not available");
+  }
+
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var importSheet = ss.getSheetByName('Import');
+  var mainSheet = ss.getSheetByName('Main');
+
+  if (!importSheet || !mainSheet) {
       SpreadsheetApp.getActiveSpreadsheet().toast('Import or Main sheet not found.', 'Error', 3);
       return;
-    }
-  
-    // Get the data from the Import sheet
-    var importData = importSheet.getDataRange().getValues();
-    
-    // Check if Main sheet has no data (first run)
-    var lastRowInMain = mainSheet.getLastRow();
-    var isFirstRun = lastRowInMain === 0 || (lastRowInMain === 1 && mainSheet.getRange(1, 1).isBlank());
-    
-    if (isFirstRun) {
+  }
+
+  // Get the data from the Import sheet
+  var importData = importSheet.getDataRange().getValues();
+
+  // Check if Main sheet has no data (first run)
+  var lastRowInMain = mainSheet.getLastRow();
+  var isFirstRun = lastRowInMain === 0 || (lastRowInMain === 1 && mainSheet.getRange(1, 1).isBlank());
+
+  if (isFirstRun) {
       // First run: Copy headers and data, add new columns, and initialize values
       copyHeadersAndData(importSheet, mainSheet, importData);
       insertAndInitializeNewColumns(mainSheet, importData.length);
-    } else {
-      // Subsequent runs: Copy only data based on headers, initialize new columns for new rows
-      var lastRowInImport = importData.length;
-      var newDataStartRow = lastRowInMain + 1;
-  
-      // Dynamically map and copy data to corresponding columns, excluding Smart Rating and Letter
-      copyDataByHeaders(importSheet, mainSheet, newDataStartRow, importData.slice(1), ["Smart Rating", "Letter"]);
-  
+  } else {
+      // Subsequent runs: Insert new rows for the new data below the header and shift existing data down
+      insertNewDataAbove(mainSheet, importData.slice(1));
+
       // Initialize new columns for new rows
-      initializeExistingColumns(mainSheet, newDataStartRow, lastRowInImport - 1);
-    }
-    
-    // Freeze the top row with headers
-    mainSheet.setFrozenRows(1);
-    
-    SpreadsheetApp.getActiveSpreadsheet().toast('Data from Import copied to Main sheet.', 'Done', 3);
+      initializeExistingColumns(mainSheet, 2, importData.length - 1);
   }
+
+  // Freeze the top row with headers
+  mainSheet.setFrozenRows(1);
+
+  SpreadsheetApp.getActiveSpreadsheet().toast('Data from Import copied to Main sheet.', 'Done', 3);
+}
+
+// Function to insert new data above existing data
+function insertNewDataAbove(sheet, newData) {
+  var numRows = newData.length;
+  var numColumns = newData[0].length;
+
+  // Insert new rows below the header and shift existing rows down
+  sheet.insertRowsAfter(1, numRows);
+
+  // Copy the new data into the newly inserted rows
+  sheet.getRange(2, 1, numRows, numColumns).setValues(newData);
+}
+
   
   // Helper function to copy headers and data from Import to Main
   function copyHeadersAndData(importSheet, mainSheet, importData) {
@@ -140,16 +195,7 @@ function initializeExistingColumns(sheet, startRow, numRows) {
     }
   }
   
-//   // Helper function to get the column index by header name
-  // function getColumnIndexByHeader(sheet, headerName) {
-  //   var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  //   for (var col = 0; col < headers.length; col++) {
-  //     if (headers[col].toLowerCase() === headerName.toLowerCase()) {
-  //       return col + 1;
-  //     }
-  //   }
-  //   return -1; // Return -1 if header not found
-  // }
+
 
   
   function createDropdownWithFormatting(sheet, letterColIndex, startRow, numRows) {

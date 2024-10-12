@@ -23,20 +23,23 @@ function processImportedData() {
     SpreadsheetApp.getActiveSpreadsheet().toast('Data cleanup completed.', 'Done', 3);
   }
   
-  // Function to add necessary columns and process the data
   function addColumnsAndProcessData(sheet) {
+    // Move "Site Raw Addr" to the first column
+    moveSiteRawAddrToFirstColumn(sheet);
+  
+    // Move "Heading" to the second column
+    moveHeadingToSecondColumn(sheet); 
+  
     // Process "Agt Contact" first as it is further to the right and won't affect "App Contact"
     processNamesInContactColumn(sheet, "Agt Contact");
     
     // Process "App Contact" after adding columns for "Agt Contact"
     processNamesInContactColumn(sheet, "App Contact");
   
-    // Move "Site Raw Addr" to the first column
-    moveSiteRawAddrToFirstColumn(sheet);
-  
     // Notify that the columns have been added and the data has been processed
     SpreadsheetApp.getActiveSpreadsheet().toast('Columns added and contact names processed successfully.', 'Done', 3);
   }
+  
   
   // Function to clean up the "Heading" column by removing everything before the number
 function cleanUpHeadingColumn(sheet) {
